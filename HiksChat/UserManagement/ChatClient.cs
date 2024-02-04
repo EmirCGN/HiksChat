@@ -11,7 +11,7 @@ namespace HiksChat.UserManagement
         public int UserId { get; set; }
         public string Name { get; set; }
         public string Language { get; set; }
-        public TranslationService translationService { get; set; }
+        public TranslationService.TranslationService translationService { get; set; }
         public List<string> messageHistory { get; set; }
         public string preferredLanguage { get; set; }
 
@@ -23,21 +23,55 @@ namespace HiksChat.UserManagement
         public void SendMessage(string message)
         {
             // Implement send message logic
+            messageHistory.Add(message);
         }
 
-        public void ReceiveMessage(string message)
+        public string ReceiveMessage()
         {
             // Implement receive message logic
+            return messageHistory.Last();
         }
 
-        public void ViewChatHistory()
+        public List<string> ViewChatHistory()
         {
-            // Implement view chat history logic
+            return messageHistory;
         }
 
         public void ProcessCommand(string command)
         {
-            // Implement process command logic
+            string[] commandParts = command.Split(' ');
+
+            switch (commandParts[0].ToLower())
+            {
+                case "/help":
+                    Console.WriteLine("=== Help Menu ===");
+                    Console.WriteLine("Available commands:");
+                    Console.WriteLine("/help       - Display this help menu");
+                    Console.WriteLine("/language   - Change preferred language");
+                    Console.WriteLine("/history    - View chat history");
+                    break;
+
+                case "/language":
+                    if (commandParts.Length > 1)
+                    {
+                        SetPreferredLanguage(commandParts[1]);
+                        Console.WriteLine($"Preferred language changed to {commandParts[1]}.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Please provide a language. Example: /language English");
+                    }
+                    break;
+
+                case "/history":
+                    ViewChatHistory();
+                    break;
+
+                default:
+                    Console.WriteLine("Unknown command. Type /help to see the available commands.");
+                    break;
+            }
         }
     }
 }
+

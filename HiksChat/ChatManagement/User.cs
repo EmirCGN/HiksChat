@@ -15,9 +15,10 @@ namespace HiksChat.ChatManagement
         public string PreferredLanguage { get; set; }
         public List<ChatGroup> Groups { get; set; }
 
-        public void RegisterUser()
+        public void RegisterUser(string username, string language)
         {
-            // Implement user registration logic
+            this.Username = username;
+            this.Language = language;
         }
 
         public List<ChatGroup> GetGroups()
