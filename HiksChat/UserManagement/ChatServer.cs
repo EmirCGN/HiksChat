@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HiksChat.ChatManagement;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,18 +14,31 @@ namespace HiksChat.UserManagement
 
         public ChatGroup CreateGroup(string groupName)
         {
-            // Implement create group logic
+            // Implement join group logic
+            var group = new ChatGroup { Name = groupName };
+            groups.Add(group);
             return new ChatGroup();
         }
 
         public void JoinGroup(ChatClient client, string groupName)
         {
             // Implement join group logic
+            var group = GetGroupByName(groupName);
+            if(group != null)
+            {
+                group.AddMember(client);
+            }
+            else
+            {
+                Console.WriteLine($"Group '{groupName}' does not exist");
+            }
         }
 
         public ChatClient RegisterUser(string username, string language)
         {
             // Implement register user logic
+            var user = new ChatClient { Name = username, Language = language };
+            users.Add(user);
             return new ChatClient();
         }
 
@@ -67,21 +81,57 @@ namespace HiksChat.UserManagement
         public void RemoveUser(int userId)
         {
             // Implement remove user logic
+            var user = GetUserById(userId);
+            if(user != null)
+            {
+                users.Remove(user);
+            }
+            else
+            {
+                Console.WriteLine($"User with ID {userId} does not exists");
+            }
         }
 
         public void RemoveGroup(int groupId)
         {
             // Implement remove group logic
+            var group = GetGroupById(groupId);
+            if (group != null)
+            {
+                groups.Remove(group);
+            }
+            else
+            {
+                Console.WriteLine($"Group with ID {groupId} does not exists");
+            }
         }
 
         public void ChangeUsername(int userId, string newUsername)
         {
             // Implement change username logic
+            var user = GetUserById(userId);
+            if(user != null)
+            {
+                user.Name = newUsername;
+            }
+            else
+            {
+                Console.WriteLine($"User with ID {userId} does not exists");
+            }
         }
 
         public void ChangeLanguage(int userId, string newLanguage)
         {
             // Implement change language logic
+            var user = GetUserById(userId);
+            if (user != null)
+            {
+                user.Language = newLanguage;
+            }
+            else
+            {
+                Console.WriteLine($"User with ID {userId} does not exist.");
+            }
         }
     }
 }

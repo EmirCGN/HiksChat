@@ -6,21 +6,73 @@ using System.Reflection.Metadata;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
+using HiksChat.ChatManagement;
 
 namespace HiksChat.Database
 {
-    public class DatabaseManager
+    public class DatabaseManager : DbContext
     {
-        public string connectionString { get; set; }
+        public static string connectionString { get; set; } = @"Data Source=C:\Users\korog\source\repos\EmirCGN\HiksChat\HiksChat\Database\HiksChat.db";
+
+        public DbSet<User> Users { get; set; } = null;
 
         public void InitializeDatabase()
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqliteConnection connection = new SqliteConnection(connectionString))
             {
                 connection.Open();
-
+                CreateTablesIfNotExists(connection);
             }
         }
+
+        public void CreateTablesIfNotExists(SqliteConnection connection)
+        {
+            string usersTableQuery = @"
+            CREATE TABLE IF NOT EXISTS Users (
+                Username TEXT PRIMARY KEY,
+                Password TEXT NOT NULL,
+                Language TEXT NOT NULL
+            );";
+            using (SqliteCommand command = new SqliteCommand(usersTableQuery, connection))
+            {
+                command.ExecuteNonQuery();
+            }
+
+            string groupsTableQuery = @"
+            CREATE TABLE IF NOT EXISTS Groups (
+                GroupId INTEGER PRIMARY KEY AUTOINCREMENT,
+                GroupName TEXT NOT NULL
+            );";
+            using (SqliteCommand command = new SqliteCommand(groupsTableQuery, connection))
+            {
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public bool CheckLogin(string username, string password)
+        {
+            using (SqliteConnection connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+                string query = "SELECT COUNT(*) FROM Users WHERE Username = @Username AND Password = @Password";
+                using (SqliteCommand command = new SqliteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Username", username);
+                    command.Parameters.AddWithValue("@Password", password);
+                    object result = command.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        long count = (long)result; // Hier den Rückgabewert als long interpretieren
+                        return count > 0;
+                    }
+                    return false;
+                }
+            }
+        }
+
+
 
         public void SaveMessage(string sender, string receiver, string content)
         {
@@ -38,38 +90,72 @@ namespace HiksChat.Database
             }
         }
 
-        public List<string> GetChatHistory(string user)
+        public async Task<List<string>> GetChatHistoryFromDatabaseAsync(int groupId)
         {
             List<string> chatHistory = new List<string>();
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            try
             {
-                connection.Open();
-                string query = "SELECT Contect FROM Messages WHERE Sender = @User OR Receiver = @User";
-
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    command.Parameters.AddWithValue("@User", user);
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    await connection.OpenAsync();
+                    string query = "SELECT Content FROM GroupMessages WHERE GroupId = @GroupId";
+                    using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        while (reader.Read())
+                        command.Parameters.AddWithValue("@GroupId", groupId);
+                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
                         {
-                            chatHistory.Add(reader.GetString(0));
+                            while (await reader.ReadAsync())
+                            {
+                                chatHistory.Add(reader.GetString(0));
+                            }
                         }
                     }
-
                 }
+                Console.WriteLine($"Chat history retrieved from database for group {groupId}.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving chat history: {ex.Message}");
             }
             return chatHistory;
         }
 
+        public async Task<int> GetGroupIdAsync()
+        {
+            int groupId = -1;
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+                    string query = "SELECT Id FROM Groups WHERE Name = @GroupName";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@GroupName", "YourGroupName");
+                        object result = await command.ExecuteScalarAsync();
+                        if (result != null)
+                        {
+                            groupId = Convert.ToInt32(result);
+                        }
+                    }
+                }
+                Console.WriteLine($"Group ID: {groupId}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving group ID: {ex.Message}");
+            }
+            return groupId;
+        }
+
+
         public void SaveUser(string username, string password, string language)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqliteConnection connection = new SqliteConnection(connectionString))
             {
                 connection.Open();
                 string query = "INSERT INTO Users (Username, Password, Language) VALUES (@Username, @Password, @Language)";
-
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (SqliteCommand command = new SqliteCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Username", username);
                     command.Parameters.AddWithValue("@Password", password);
