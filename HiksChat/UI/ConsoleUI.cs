@@ -18,35 +18,69 @@ namespace HiksChat.UI
             selectedOptionIndex = 0;
         }
 
+        #region Main Menu
+
         public static void RunMainMenu()
         {
-            Console.Clear();
-            Console.WriteLine("  _   _             _      _   _                ");
-            Console.WriteLine(" | | | |           | |    | | (_)               ");
-            Console.WriteLine(" | |_| | ___  _ __ | | ___| |_ _ _ __   __ _   ");
-            Console.WriteLine(" |  _  |/ _ \\| '_ \\| |/ _ \\ __| | '_ \\ / _` |  ");
-            Console.WriteLine(" | | | | (_) | |_) | |  __/ |_| | | | | (_| |  ");
-            Console.WriteLine(" \\_| |_/\\___/| .__/|_|\\___|\\__|_|_| |_|\\__, |  ");
-            Console.WriteLine("             | |                         __/ |  ");
-            Console.WriteLine("             |_|                        |___/   ");
+            Console.Clear(); // Console löschen
+            Console.CursorVisible = false; // Cursor unsichtbar machen
+
+            PrintLogo();
+            PrintMenuOptions();
+
+            HandleUserInput();
+
+            RunMainMenu(); // Nach der Auswahl zurück zum Hauptmenü gehen
+        }
+
+        private static void PrintLogo()
+        {
+            string[] logoLines = {
+                @"  /$$   /$$ /$$ /$$                  /$$$$$$  /$$                   /$$    ",
+                @" | $$  | $$|__/| $$                 /$$__  $$| $$                  | $$    ",
+                @" | $$  | $$ /$$| $$   /$$  /$$$$$$$| $$  \__/| $$$$$$$   /$$$$$$  /$$$$$$  ",
+                @" | $$$$$$$$| $$| $$  /$$/ /$$_____/| $$      | $$__  $$ |____  $$|_  $$_/  ",
+                @" | $$__  $$| $$| $$$$$$/ |  $$$$$$ | $$      | $$  \ $$  /$$$$$$$  | $$    ",
+                @" | $$  | $$| $$| $$_  $$  \____  $$| $$    $$| $$  | $$ /$$__  $$  | $$ /$$",
+                @" | $$  | $$| $$| $$ \  $$ /$$$$$$$/|  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/",
+                @" |__/  |__/|__/|__/  \__/|_______/  \______/ |__/  |__/ \_______/   \___/  ",
+                ""
+            };
+
+            int windowWidth = Console.WindowWidth;
+            foreach (string line in logoLines)
+            {
+                Console.WriteLine(CenterText(line, windowWidth));
+            }
+
             Console.WriteLine();
-            Console.WriteLine("Bitte wählen Sie eine Option:");
+        }
+
+        private static void PrintMenuOptions()
+        {
+            Console.WriteLine("\t\t\t\t\t Bitte wählen Sie eine Option:");
             string[] menuOptions = { "Anmelden", "Registrieren", "Programm beenden" };
+            int longestOptionLength = menuOptions.Max(option => option.Length);
+            int padding = (Console.WindowWidth - longestOptionLength) / 2;
             for (int i = 0; i < menuOptions.Length; i++)
             {
                 if (i == selectedOptionIndex)
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.Write(new string(' ', padding));
                     Console.Write("> ");
                 }
                 else
                 {
-                    Console.Write("  ");
+                    Console.Write(new string(' ', padding + 2));
                 }
                 Console.WriteLine($"{i + 1}. {menuOptions[i]}");
                 Console.ResetColor();
             }
+        }
 
+        private static void HandleUserInput()
+        {
             ConsoleKeyInfo keyInfo = Console.ReadKey();
             switch (keyInfo.Key)
             {
@@ -57,7 +91,7 @@ namespace HiksChat.UI
                     }
                     break;
                 case ConsoleKey.DownArrow:
-                    if (selectedOptionIndex < menuOptions.Length - 1)
+                    if (selectedOptionIndex < 2)
                     {
                         selectedOptionIndex++;
                     }
@@ -66,9 +100,21 @@ namespace HiksChat.UI
                     PerformSelectedAction(selectedOptionIndex);
                     break;
             }
-
-            RunMainMenu(); // Nach der Auswahl zurück zum Hauptmenü gehen
         }
+
+        #endregion
+
+        #region Utility Methods
+
+        public static string CenterText(string text, int width)
+        {
+            return text.PadLeft((width + text.Length) / 2).PadRight(width);
+        }
+
+        #endregion
+
+
+        #region Action Methods
 
         private static void PerformSelectedAction(int selectedOptionIndex)
         {
@@ -128,6 +174,10 @@ namespace HiksChat.UI
             Console.ReadKey();
         }
 
+        #endregion
+
+
+        #region display
         public void DisplayMessage(string sender, string message, ConsoleColor color, string emoji)
         {
             Console.ForegroundColor = color;
@@ -141,5 +191,7 @@ namespace HiksChat.UI
             Console.Write($"{currentUser.Username}, {prompt}: ");
             return Console.ReadLine();
         }
+
+        #endregion
     }
 }
