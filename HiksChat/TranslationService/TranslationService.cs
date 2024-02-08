@@ -11,6 +11,8 @@ namespace HiksChat.TranslationService
         public int TranslationId { get; set; }
         public string ApiKey { get; set; }
 
+        private List<string> supportedLanguages = new List<string>();
+
         public string Translate(string text, string targetLanguage)
         {
             // Implement translation logic
@@ -32,11 +34,19 @@ namespace HiksChat.TranslationService
         public void AddSupportedLanguage(string language)
         {
             // Implement adding supported language logic
+            if (!supportedLanguages.Contains(language))
+            {
+                supportedLanguages.Add(language);
+            }
         }
 
         public void RemoveSupportedLanguage(string language)
         {
             // Implement removing supported language logic
+            if (!supportedLanguages.Contains(language))
+            {
+                supportedLanguages.Remove(language);
+            }
         }
     }
 }

@@ -9,9 +9,9 @@ namespace HiksChat.ChatManagement
 {
     public class User
     {
-        public int UserId { get; set; }
-        public string Username { get; set; }
-        public string Language { get; set; }
+        public int UserId { get; set; } 
+        public string Username { get; set; } = null!;
+        public string Language { get; set; } = null!;
         public string PreferredLanguage { get; set; }
         public List<ChatGroup> Groups { get; set; }
 

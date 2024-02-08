@@ -18,6 +18,8 @@ namespace HiksChat.Database
 
         public DbSet<User> Users { get; set; } = null;
 
+        #region Initialization
+
         public void InitializeDatabase()
         {
             using (SqliteConnection connection = new SqliteConnection(connectionString))
@@ -50,6 +52,9 @@ namespace HiksChat.Database
                 command.ExecuteNonQuery();
             }
         }
+        #endregion
+
+        #region User Management
 
         public bool CheckLogin(string username, string password)
         {
@@ -72,8 +77,39 @@ namespace HiksChat.Database
             }
         }
 
+        public void SaveUser(string username, string password, string language)
+        {
+            using (SqliteConnection connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+                string query = "INSERT INTO Users (Username, Password, Language) VALUES (@Username, @Password, @Language)";
+                using (SqliteCommand command = new SqliteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Username", username);
+                    command.Parameters.AddWithValue("@Password", password);
+                    command.Parameters.AddWithValue("@Language", language);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
 
+        public void RemoveUser(int userId)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string query = "DELETE FROM Users WHERE UserId = @UserId";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@UserId", userId);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
 
+        #endregion
+
+        #region User Management
         public void SaveMessage(string sender, string receiver, string content)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -147,24 +183,9 @@ namespace HiksChat.Database
             }
             return groupId;
         }
+        #endregion
 
-
-        public void SaveUser(string username, string password, string language)
-        {
-            using (SqliteConnection connection = new SqliteConnection(connectionString))
-            {
-                connection.Open();
-                string query = "INSERT INTO Users (Username, Password, Language) VALUES (@Username, @Password, @Language)";
-                using (SqliteCommand command = new SqliteCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@Username", username);
-                    command.Parameters.AddWithValue("@Password", password);
-                    command.Parameters.AddWithValue("@Language", language);
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
+        #region Group Management
         public void SaveGroup(string groupName)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -174,20 +195,6 @@ namespace HiksChat.Database
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@GroupName", groupName);
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
-        public void RemoveUser(int userId)
-        {
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-                string query = "DELETE FROM Users WHERE UserId = @UserId";
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@UserId", userId);
                     command.ExecuteNonQuery();
                 }
             }
@@ -206,6 +213,6 @@ namespace HiksChat.Database
                 }
             }
         }
-
+        #endregion
     }
 }

@@ -12,6 +12,7 @@ namespace HiksChat.UserManagement
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public int GroupId { get; set; }
         public List<ChatClient> Members { get; set; }
 
         public void AddMember(ChatClient member)

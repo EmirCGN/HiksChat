@@ -58,7 +58,7 @@ namespace HiksChat.UI
 
         private static void PrintMenuOptions()
         {
-            Console.WriteLine("\t\t\t\t\t Bitte wählen Sie eine Option:");
+            Console.WriteLine("\t\t\t\t\t\t Bitte wählen Sie eine Option:");
             string[] menuOptions = { "Anmelden", "Registrieren", "Programm beenden" };
             int longestOptionLength = menuOptions.Max(option => option.Length);
             int padding = (Console.WindowWidth - longestOptionLength) / 2;
@@ -146,6 +146,10 @@ namespace HiksChat.UI
             databaseManager.SaveUser(username, password, language);
 
             Console.WriteLine("Benutzer erfolgreich registriert!");
+
+            ConsoleUI chatUI = new ConsoleUI(new User { Username = username }); // Nach der Registrierung zum Chat-Menü weiterleiten
+            chatUI.RunChatMenu();
+
             Console.WriteLine("Drücken Sie eine beliebige Taste, um fortzufahren...");
             Console.ReadKey();
         }
@@ -164,6 +168,8 @@ namespace HiksChat.UI
             if (loggedIn)
             {
                 Console.WriteLine($"Willkommen zurück, {username}!");
+                ConsoleUI chatUI = new ConsoleUI(new User { Username = username }); // Nach der Anmeldung zum Chat-Menü weiterleiten
+                chatUI.RunChatMenu();
             }
             else
             {
@@ -176,6 +182,86 @@ namespace HiksChat.UI
 
         #endregion
 
+        #region chat
+
+        public void RunChatMenu()
+        {
+            Console.Clear();
+            Console.WriteLine($"Willkommen im Chat-Menü, {currentUser.Username}!");
+
+            while (true)
+            {
+                PrintChatMenuOptions();
+                HandleChatMenuInput();
+            }
+        }
+
+        private void PrintChatMenuOptions()
+        {
+            Console.WriteLine("\nBitte wählen Sie eine Option:");
+            string[] menuOptions = { "Mit anderen Benutzern chatten", "Gruppe erstellen", "Einstellungen", "Abmelden" };
+            Console.Clear();
+            for (int i = 0; i < menuOptions.Length; i++)
+            {
+                if (i == selectedOptionIndex)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.Write("> ");
+                }
+                else
+                {
+                    Console.Write("  ");
+                }
+                Console.WriteLine($"{i + 1}. {menuOptions[i]}");
+                Console.ResetColor();
+            }
+        }
+
+        private void HandleChatMenuInput()
+        {
+            ConsoleKeyInfo keyInfo = Console.ReadKey();
+            switch (keyInfo.Key)
+            {
+                case ConsoleKey.UpArrow:
+                    if (selectedOptionIndex > 0)
+                    {
+                        selectedOptionIndex--;
+                    }
+                    break;
+                case ConsoleKey.DownArrow:
+                    if (selectedOptionIndex < 3)
+                    {
+                        selectedOptionIndex++;
+                    }
+                    break;
+                case ConsoleKey.Enter:
+                    PerformChatMenuAction(selectedOptionIndex);
+                    break;
+            }
+        }
+
+        private void PerformChatMenuAction(int selectedOptionIndex)
+        {
+            switch (selectedOptionIndex)
+            {
+                case 0:
+                    // Chat mit anderen Benutzern
+                    break;
+                case 1:
+                    // Gruppe erstellen
+                    break;
+                case 2:
+                    // Einstellungen
+                    break;
+                case 3:
+                    // Abmelden
+                    Console.WriteLine($"Sie wurden abgemeldet, {currentUser.Username}.");
+                    Console.ReadLine();
+                    return; // Zurück zum Hauptmenü
+            }
+        }
+
+        #endregion
 
         #region display
         public void DisplayMessage(string sender, string message, ConsoleColor color, string emoji)
