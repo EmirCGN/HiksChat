@@ -10,23 +10,22 @@ namespace HiksChat.UserManagement
 {
     public class ChatGroup
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
         public int GroupId { get; set; }
         public List<ChatClient> Members { get; set; }
+        public string Name { get; set; } // Name hinzugefügt
 
         public void AddMember(ChatClient member)
         {
             // Implement add member logic
             Members.Add(member);
-            Console.WriteLine($"Member {member.Name} added to group {Name}.");
+            Console.WriteLine($"Member {member.User.Username} added to group {Name}.");
         }
 
         public void RemoveMember(ChatClient member)
         {
             // Implement remove member logic
             Members.Remove(member);
-            Console.WriteLine($"Member {member.Name} removed from group {Name}.");
+            Console.WriteLine($"Member {member.User.Username} removed from group {Name}.");
         }
 
         public void SaveToDatabase()
@@ -75,7 +74,7 @@ namespace HiksChat.UserManagement
                 string query = "INSERT INTO GroupMessages (GroupId, Sender, Content) VALUES (@GroupId, @Sender, @Content)";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@GroupId", Id);
+                    command.Parameters.AddWithValue("@GroupId", GroupId);
                     command.Parameters.AddWithValue("@Sender", sender);
                     command.Parameters.AddWithValue("@Content", content);
                     command.ExecuteNonQuery();
@@ -93,7 +92,7 @@ namespace HiksChat.UserManagement
                 string query = "SELECT Content FROM GroupMessages WHERE GroupId = @GroupId";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@GroupId", Id);
+                    command.Parameters.AddWithValue("@GroupId", GroupId);
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -109,8 +108,8 @@ namespace HiksChat.UserManagement
 
         public int GetGroupId()
         {
-            Console.WriteLine($"Group ID: {Id}");
-            return Id;
+            Console.WriteLine($"Group ID: {GroupId}");
+            return GroupId;
         }
     }
 }

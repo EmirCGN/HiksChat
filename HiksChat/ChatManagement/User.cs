@@ -9,15 +9,17 @@ namespace HiksChat.ChatManagement
 {
     public class User
     {
-        public int UserId { get; set; } 
+        public int UserId { get; set; }
         public string Username { get; set; } = null!;
+        public string Password { get; set; } = null!;
         public string Language { get; set; } = null!;
         public string PreferredLanguage { get; set; }
         public List<ChatGroup> Groups { get; set; }
 
-        public void RegisterUser(string username, string language)
+        public void RegisterUser(string username, string password, string language)
         {
             this.Username = username;
+            this.Password = password;
             this.Language = language;
         }
 

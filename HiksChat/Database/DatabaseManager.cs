@@ -183,6 +183,30 @@ namespace HiksChat.Database
             }
             return groupId;
         }
+
+        public List<string> GetUserChats(string username)
+        {
+            List<string> userChats = new List<string>();
+            using (SqliteConnection connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+                string query = "SELECT Receiver FROM Messages WHERE Sender = @Username UNION SELECT Sender FROM Messages WHERE Receiver = @Username";
+                using(SqliteCommand command = new SqliteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Username", username);
+                    using (SqliteDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            userChats.Add(reader.GetString(0));
+                        }
+                    }
+                }
+            }
+
+
+            return userChats.Distinct().ToList();
+        }
         #endregion
 
         #region Group Management

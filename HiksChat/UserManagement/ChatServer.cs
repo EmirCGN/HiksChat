@@ -9,22 +9,28 @@ namespace HiksChat.UserManagement
 {
     public class ChatServer
     {
-        public List<ChatGroup> groups { get; set; }
-        public List<ChatClient> users { get; set; }
+        public List<ChatGroup> Groups { get; }
+        public List<ChatClient> Users { get; }
+
+        public ChatServer()
+        {
+            Groups = new List<ChatGroup>();
+            Users = new List<ChatClient>();
+        }
+
+        #region Group Management
 
         public ChatGroup CreateGroup(string groupName)
         {
-            // Implement join group logic
             var group = new ChatGroup { Name = groupName };
-            groups.Add(group);
-            return new ChatGroup();
+            Groups.Add(group);
+            return group;
         }
 
         public void JoinGroup(ChatClient client, string groupName)
         {
-            // Implement join group logic
             var group = GetGroupByName(groupName);
-            if(group != null)
+            if (group != null)
             {
                 group.AddMember(client);
             }
@@ -34,104 +40,93 @@ namespace HiksChat.UserManagement
             }
         }
 
-        public ChatClient RegisterUser(string username, string language)
-        {
-            // Implement register user logic
-            var user = new ChatClient { Name = username, Language = language };
-            users.Add(user);
-            return new ChatClient();
-        }
-
-        public ChatClient GetUserById(int userId)
-        {
-            // Implement get user by Id logic
-            return new ChatClient();
-        }
-
-        public ChatClient GetUserByUsername(string username)
-        {
-            // Implement get user by username logic
-            return new ChatClient();
-        }
-
         public ChatGroup GetGroupByName(string groupName)
         {
-            // Implement get group by name logic
-            return new ChatGroup();
+            return Groups.FirstOrDefault(group => group.Name == groupName);
         }
 
         public ChatGroup GetGroupById(int groupId)
         {
-            // Implement get group by Id logic
-            return new ChatGroup();
-        }
-
-        public List<ChatClient> GetAllUsers()
-        {
-            // Implement get all users logic
-            return new List<ChatClient>();
-        }
-
-        public List<ChatGroup> GetAllGroups()
-        {
-            // Implement get all groups logic
-            return new List<ChatGroup>();
-        }
-
-        public void RemoveUser(int userId)
-        {
-            // Implement remove user logic
-            var user = GetUserById(userId);
-            if(user != null)
-            {
-                users.Remove(user);
-            }
-            else
-            {
-                Console.WriteLine($"User with ID {userId} does not exists");
-            }
+            return Groups.FirstOrDefault(group => group.GroupId == groupId);
         }
 
         public void RemoveGroup(int groupId)
         {
-            // Implement remove group logic
             var group = GetGroupById(groupId);
             if (group != null)
             {
-                groups.Remove(group);
+                Groups.Remove(group);
             }
             else
             {
-                Console.WriteLine($"Group with ID {groupId} does not exists");
+                Console.WriteLine($"Group with ID {groupId} does not exist");
+            }
+        }
+
+        #endregion
+
+        #region User Management
+        public ChatClient GetUserById(int userId)
+        {
+            return Users.FirstOrDefault(user => user.User.UserId == userId);
+        }
+
+        public ChatClient GetUserByUsername(string username)
+        {
+            return Users.FirstOrDefault(user => user.User.Username == username);
+        }
+
+        public void RemoveUser(int userId)
+        {
+            var user = GetUserById(userId);
+            if (user != null)
+            {
+                Users.Remove(user);
+            }
+            else
+            {
+                Console.WriteLine($"User with ID {userId} does not exist");
             }
         }
 
         public void ChangeUsername(int userId, string newUsername)
         {
-            // Implement change username logic
             var user = GetUserById(userId);
-            if(user != null)
+            if (user != null)
             {
-                user.Name = newUsername;
+                user.User.Username = newUsername;
             }
             else
             {
-                Console.WriteLine($"User with ID {userId} does not exists");
+                Console.WriteLine($"User with ID {userId} does not exist");
             }
         }
 
         public void ChangeLanguage(int userId, string newLanguage)
         {
-            // Implement change language logic
             var user = GetUserById(userId);
             if (user != null)
             {
-                user.Language = newLanguage;
+                user.User.Language = newLanguage;
             }
             else
             {
                 Console.WriteLine($"User with ID {userId} does not exist.");
             }
         }
+
+        #endregion
+
+        #region Chat Management
+
+        public void CreateChat(ChatClient user1, ChatClient user2)
+        {
+            var group = new ChatGroup { Name = $"{user1.User.Username}_{user2.User.Username}" };
+            group.AddMember(user1);
+            group.AddMember(user2);
+            Groups.Add(group);
+        }
+
+        #endregion
     }
 }
