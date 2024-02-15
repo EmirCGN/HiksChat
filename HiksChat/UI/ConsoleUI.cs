@@ -119,7 +119,7 @@ namespace HiksChat.UI
             return text.PadLeft((width + text.Length) / 2).PadRight(width);
         }
 
-        private static string ReadPassword()
+        private static string ReadPassword() 
         {
             string password = "";
             ConsoleKeyInfo key;
@@ -242,6 +242,7 @@ namespace HiksChat.UI
             try
             {
                 Console.Clear();
+                Console.Title = $"HiksChat - {currentUser.Username}";
                 Console.WriteLine($"Welcome to the Chat Menu, {currentUser.Username}!");
 
                 while (true)
@@ -326,7 +327,7 @@ namespace HiksChat.UI
         public void DisplayMessage(string sender, string message, ConsoleColor color, string emoji)
         {
             Console.ForegroundColor = color;
-            Console.WriteLine($"{sender} - {DateTime.Now:g}");
+            Console.WriteLine($"{currentUser.Username} - {DateTime.Now:g}");
             Console.WriteLine($"{message}\n");
             Console.ResetColor();
         }

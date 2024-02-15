@@ -68,49 +68,59 @@ namespace HiksChat.UserManagement
 
         public void ProcessCommand(string command)
         {
-            string[] commandParts = command.Split(' ');
-
-            switch (commandParts[0].ToLower())
+            if (command.StartsWith("/"))
             {
-                case "/help":
-                    Console.WriteLine("=== Help Menu ===");
-                    Console.WriteLine("Available commands:");
-                    Console.WriteLine("/help       - Display this help menu");
-                    Console.WriteLine("/language   - Change preferred language");
-                    Console.WriteLine("/history    - View chat history");
-                    Console.WriteLine("/settings   - Shows your settings");
-                    Console.WriteLine("/ping       - Shows your ping");
-                    break;
+                string[] commandParts = command.Split(' ');
 
-                case "/language":
-                    if (commandParts.Length > 1)
-                    {
-                        SetPreferredLanguage(commandParts[1]);
-                        Console.WriteLine($"Preferred language changed to {commandParts[1]}.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Please provide a language. Example: /language English");
-                    }
-                    break;
-                case "/settings":
+                switch (commandParts[0].ToLower())
+                {
+                    case "/help":
+                        Console.WriteLine("=== Help Menu ===");
+                        Console.WriteLine("Available commands:");
+                        Console.WriteLine("/help       - Display this help menu");
+                        Console.WriteLine("/language   - Change preferred language");
+                        Console.WriteLine("/history    - View chat history");
+                        Console.WriteLine("/settings   - Shows your settings");
+                        Console.WriteLine("/ping       - Shows your ping");
+                        break;
 
-                    break;
-                case "/history":
-                    ViewChatHistory();
-                    break;
+                    case "/language":
+                        if (commandParts.Length > 1)
+                        {
+                            SetPreferredLanguage(commandParts[1]);
+                            Console.WriteLine($"Preferred language changed to {commandParts[1]}.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Please provide a language. Example: /language English");
+                        }
+                        break;
 
-                case "/ping":
-                    int ping = CalculatePing();
-                    Console.WriteLine($"Ping to server: {ping} ms");
-                    Console.WriteLine("Note: Lower ping values indicate faster response times.");
-                    break;
+                    case "/settings":
+                        // Implement settings logic
+                        break;
 
-                default:
-                    Console.WriteLine("Unknown command. Type /help to see the available commands.");
-                    break;
+                    case "/history":
+                        ViewChatHistory();
+                        break;
+
+                    case "/ping":
+                        int ping = CalculatePing();
+                        Console.WriteLine($"Ping to server: {ping} ms");
+                        Console.WriteLine("Note: Lower ping values indicate faster response times.");
+                        break;
+
+                    default:
+                        Console.WriteLine("Unknown command. Type /help to see the available commands.");
+                        break;
+                }
+            }
+            else
+            {
+                SendMessage(command);
             }
         }
+
 
         public int CalculatePing()
         {
