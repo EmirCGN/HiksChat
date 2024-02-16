@@ -142,7 +142,6 @@ namespace HiksChat.UI
         }
         #endregion
 
-
         #region Action Methods
 
         private static void PerformSelectedAction(int selectedOptionIndex)

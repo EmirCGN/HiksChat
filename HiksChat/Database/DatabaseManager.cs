@@ -14,7 +14,7 @@ namespace HiksChat.Database
 {
     public class DatabaseManager : DbContext
     {
-        public static string connectionString { get; set; } = @"Data Source=C:\Users\korog\source\repos\EmirCGN\HiksChat\HiksChat\Database\HiksChat.db";
+        public static string connectionString { get; set; } = @"Data Source=C:\Users\muhammedem.k\Source\Repos\HiksChat\HiksChat\Database\HiksChat.db";
 
         public DbSet<User> Users { get; set; } = null;
 
