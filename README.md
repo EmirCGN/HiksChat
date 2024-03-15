@@ -2,7 +2,7 @@
 
 HiksChat is a chat application that was developed in C# and offers various functions for user and group management as well as for communication. Here is an overview of the most important classes and their functions:
 
-## UML diagram
+## UML diagram of my project
 
 ```mermaid
 classDiagram
@@ -117,5 +117,66 @@ classDiagram
         + void SaveUser(string username, string password, string language)
         + bool CheckLogin(string username, string password)
     }
+```
+
+## UML diagram of my database
+
+```mermaid
+classDiagram
+    class DatabaseManager {
+        -static string connectionString
+        -DbSet<User> Users
+        +void InitializeDatabase()
+        +void CreateTablesIfNotExists(SqliteConnection connection)
+        +bool CheckLogin(string username, string password)
+        +void SaveUser(string username, string password, string language)
+        +void RemoveUser(int userId)
+        +void SaveMessage(string sender, string receiver, string content)
+        +Task<List<string>> GetChatHistoryFromDatabaseAsync(int groupId)
+        +Task<int> GetGroupIdAsync()
+        +List<string> GetUserChats(string username)
+        +void SaveGroup(string groupName)
+        +void RemoveGroup(int groupId)
+    }
+    class SqliteConnection {
+        +void Open()
+    }
+    class SqliteCommand {
+        +void ExecuteNonQuery()
+        +object ExecuteScalar()
+        +SqliteDataReader ExecuteReader()
+    }
+    class SqliteDataReader {
+        +bool Read()
+        +string GetString(int ordinal)
+    }
+    class SqlCommand {
+        +void ExecuteNonQuery()
+        +object ExecuteScalar()
+        +SqlDataReader ExecuteReader()
+    }
+    class SqlDataReader {
+        +bool Read()
+        +string GetString(int ordinal)
+    }
+    class User {
+        -string Username
+        -string Password
+        -string Language
+    }
+    class SqlConnection {
+        +void Open()
+    }
+
+    DatabaseManager --> SqliteConnection : Manages
+    DatabaseManager --> User : Manages
+    DatabaseManager --> SqliteCommand : Executes
+    DatabaseManager --> SqlCommand : Executes
+    DatabaseManager --> SqlConnection : Executes
+    DatabaseManager --> SqliteDataReader : Executes
+    SqliteCommand --> SqliteConnection : Uses
+    SqlCommand --> SqlConnection : Uses
+    SqliteDataReader --> SqliteCommand : Retrieves data
+    SqlDataReader --> SqlCommand : Retrieves data
 ```
 These classes work together to create a fully functional chat application that allows users to communicate with each other and organize group chats.
